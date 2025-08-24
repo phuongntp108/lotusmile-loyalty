@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], res.user);
       router.push("/requests");
       toast({
-        title: "Welcome to Smile Airlines!",
+        title: "Welcome to LotusMiles!",
         description: "Your account has been created successfully.",
       });
     },

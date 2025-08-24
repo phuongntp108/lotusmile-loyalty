@@ -63,7 +63,7 @@ export default function AuthenticatedLayout({ children }: LayoutProps) {
                 <span className="text-white font-bold text-lg">S</span>
               </div>
               <h1 className="text-xl font-bold text-airline-blue">
-                Lotus Smile
+                LotusMiles
               </h1>
             </Link>
 
@@ -157,7 +157,7 @@ export default function AuthenticatedLayout({ children }: LayoutProps) {
                 <div className="w-10 h-10 bg-airline-gold rounded-full flex items-center justify-center mr-3">
                   <span className="text-white font-bold text-lg">S</span>
                 </div>
-                <h3 className="text-xl font-bold">Smile Airlines</h3>
+                <h3 className="text-xl font-bold">LotusMiles</h3>
               </div>
               <p className="text-gray-400">
                 Making every journey memorable with our loyalty rewards program.
@@ -249,7 +249,7 @@ export default function AuthenticatedLayout({ children }: LayoutProps) {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-            <p>&copy; 2024 Smile Airlines. All rights reserved.</p>
+            <p>&copy; 2024 LotusMiles. All rights reserved.</p>
           </div>
         </div>
       </footer>

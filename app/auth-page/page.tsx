@@ -92,7 +92,7 @@ export default function AuthPage() {
             <div className="w-16 h-16 bg-airline-blue rounded-full flex items-center justify-center mx-auto mb-4">
               <Plane className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">Smile Airlines</h1>
+            <h1 className="text-3xl font-bold text-gray-900">LotusMiles</h1>
             <p className="text-gray-600 mt-2">
               Your journey to the skies begins here
             </p>
@@ -110,7 +110,7 @@ export default function AuthPage() {
                 <CardHeader>
                   <CardTitle>Welcome Back</CardTitle>
                   <CardDescription>
-                    Sign in to your Smile Airlines account
+                    Sign in to your LotusMiles account
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -180,7 +180,7 @@ export default function AuthPage() {
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Join Smile Airlines</CardTitle>
+                  <CardTitle>Join LotusMiles</CardTitle>
                   <CardDescription>
                     Create your loyalty account and start earning points
                   </CardDescription>
@@ -394,7 +394,7 @@ export default function AuthPage() {
         <div className="text-center lg:text-left">
           <h2 className="text-5xl font-bold text-gray-900 leading-tight mb-6">
             Soar Higher with
-            <span className="text-airline-blue block">Smile Airlines</span>
+            <span className="text-airline-blue block">LotusMiles</span>
           </h2>
           <p className="text-xl text-gray-600 mb-8">
             Join millions of travelers earning points, unlocking exclusive
