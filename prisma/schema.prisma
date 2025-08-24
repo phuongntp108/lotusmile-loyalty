@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RequestStatus {
+  reviewing
+  approved
+  rejected
+}
+
+model User {
+  id        String    @id @default(uuid())
+  ssm_id    String    @unique @default(uuid())
+  email     String    @unique
+  name      String?
+  password  String
+  createdAt DateTime  @default(now())
+
+  // relation
+  requests  Request[]
+}
+
+model Request {
+  id         String   @id @default(uuid())
+  from       String
+  to         String
+  miles      Int
+  flightCode String
+  type       String
+
+  // relation to User
+  requestor   User   @relation(fields: [requestorId], references: [id])
+  requestorId String
+
+  status      RequestStatus @default(reviewing)
+
+  createdAt DateTime @default(now())
+}
