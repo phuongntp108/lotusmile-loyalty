@@ -40,6 +40,8 @@ model Request {
   requestorId String
 
   status      RequestStatus @default(reviewing)
+  baseMiles   Int  @default(0)
+  bonusMiles  Int? @default(0)
 
   createdAt DateTime @default(now())
 }

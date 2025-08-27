@@ -1,8 +1,12 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { getAccessToken } from "@/helpers/access-token";
 import { useAuth } from "@/hooks/useAuth";
+import { PointHistory } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { ofetch } from "ofetch";
 import {
   Bar,
   BarChart,
@@ -16,25 +20,23 @@ import {
 export default function History() {
   const { user } = useAuth();
 
-  const pointHistory = [
-    { createdAt: "2024-09-15T10:20:00Z", type: "earned", points: 50 },
-    { createdAt: "2024-09-18T14:30:00Z", type: "redeemed", points: 20 },
-    { createdAt: "2024-10-02T08:45:00Z", type: "earned", points: 100 },
-    { createdAt: "2024-10-10T09:00:00Z", type: "redeemed", points: 40 },
-    { createdAt: "2024-11-05T16:10:00Z", type: "earned", points: 70 },
-    { createdAt: "2024-11-22T12:00:00Z", type: "earned", points: 30 },
-    { createdAt: "2024-12-01T18:20:00Z", type: "redeemed", points: 10 },
-    { createdAt: "2025-01-07T07:50:00Z", type: "earned", points: 120 },
-    { createdAt: "2025-01-15T19:00:00Z", type: "redeemed", points: 50 },
-    { createdAt: "2025-02-03T13:15:00Z", type: "earned", points: 200 },
-    { createdAt: "2025-02-12T11:00:00Z", type: "redeemed", points: 100 },
-    { createdAt: "2025-03-09T09:40:00Z", type: "earned", points: 80 },
-    { createdAt: "2025-03-20T15:25:00Z", type: "redeemed", points: 30 },
-  ];
+  const { data: pointHistoriesRes } = useQuery({
+    queryKey: ["/api/point-history"],
+    queryFn: async () => {
+      return await ofetch<{ payload: { results: PointHistory[] } }>(
+        "/api/point-history",
+        {
+          headers: { Authorization: `Bearer ${getAccessToken() ?? ""} ` },
+        }
+      );
+    },
+  });
+
+  const pointHistories = pointHistoriesRes?.payload.results;
 
   // Process data for chart
   const processChartData = () => {
-    if (!pointHistory) return [];
+    if (!pointHistories) return [];
 
     // Group by month and sum points
     const monthlyData: Record<
@@ -46,16 +48,16 @@ export default function History() {
       }
     > = {};
 
-    pointHistory.forEach((entry) => {
-      const month = format(new Date(entry.createdAt), "MMM yyyy");
+    pointHistories?.forEach((entry) => {
+      const month = format(new Date(entry.create_date), "MMM yyyy");
       if (!monthlyData[month]) {
         monthlyData[month] = { month, earned: 0, redeemed: 0 };
       }
 
-      if (entry.type === "earned") {
-        monthlyData[month].earned += entry.points;
+      if (entry.modification > 0) {
+        monthlyData[month].earned += entry.modification;
       } else {
-        monthlyData[month].redeemed += entry.points;
+        monthlyData[month].redeemed += entry.modification;
       }
     });
 
@@ -86,7 +88,10 @@ export default function History() {
                 className="text-3xl font-bold text-green-600"
                 data-testid="text-total-earned"
               >
-                {"0"}
+                {
+                  user?.tier_details?.point_account_balances.summary
+                    .life_time_points
+                }
               </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -115,7 +120,11 @@ export default function History() {
                 className="text-3xl font-bold text-red-600"
                 data-testid="text-total-used"
               >
-                {"0"}
+                {pointHistories?.reduce((acc, curr) => {
+                  return curr.modification < 0
+                    ? (acc += -curr.modification)
+                    : acc;
+                }, 0)}
               </p>
             </div>
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -146,7 +155,8 @@ export default function History() {
                 className="text-3xl font-bold text-airline-blue"
                 data-testid="text-current-balance"
               >
-                {user?.available_points?.toLocaleString() || "0"}
+                {user?.tier_details?.point_account_balances.summary.total_points?.toLocaleString() ||
+                  "0"}
               </p>
             </div>
             <div className="w-12 h-12 bg-airline-light rounded-full flex items-center justify-center">
@@ -194,12 +204,12 @@ export default function History() {
                 <Tooltip />
                 <Bar
                   dataKey="earned"
-                  fill="hsl(var(--chart-2))"
+                  fill="var(--chart-1)"
                   name="Points Earned"
                 />
                 <Bar
                   dataKey="redeemed"
-                  fill="hsl(var(--destructive))"
+                  fill="var(--destructive)"
                   name="Points Redeemed"
                 />
               </BarChart>
@@ -241,7 +251,7 @@ export default function History() {
           </h2>
         </div>
 
-        {!pointHistory || pointHistory.length === 0 ? (
+        {!pointHistories || pointHistories.length === 0 ? (
           <div className="p-8 text-center" data-testid="empty-state-activity">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
@@ -267,21 +277,20 @@ export default function History() {
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {pointHistory.slice(0, 10).map((entry) => (
+            {pointHistories.map((entry) => (
               <div
-                key={entry.createdAt}
+                key={entry.create_date}
                 className="px-6 py-4 flex items-center justify-between"
-                data-testid={`activity-item-${entry.createdAt}`}
               >
                 <div className="flex items-center">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${
-                      entry.type === "earned" ? "bg-green-100" : "bg-red-100"
+                      entry.modification > 0 ? "bg-green-100" : "bg-red-100"
                     }`}
                   >
                     <svg
                       className={`w-5 h-5 ${
-                        entry.type === "earned"
+                        entry.modification > 0
                           ? "text-green-600"
                           : "text-red-600"
                       }`}
@@ -289,7 +298,7 @@ export default function History() {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      {entry.type === "earned" ? (
+                      {entry.modification > 0 ? (
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -308,23 +317,23 @@ export default function History() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {entry.points}
+                      {entry.modification}
                     </p>
-                    <p
-                      className="text-xs text-gray-500"
-                      data-testid={`text-date-${entry.createdAt}`}
-                    >
-                      {format(new Date(entry.createdAt), "MMM dd, yyyy HH:mm")}
+                    <p className="text-xs text-gray-500">
+                      {format(
+                        new Date(entry.create_date),
+                        "MMM dd, yyyy HH:mm"
+                      )}
                     </p>
                   </div>
                 </div>
                 <div
                   className={`text-sm font-semibold ${
-                    entry.type === "earned" ? "text-green-600" : "text-red-600"
+                    entry.modification > 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
-                  {entry.type === "earned" ? "+" : "-"}
-                  {entry.points.toLocaleString()}
+                  {entry.modification > 0 ? "+" : ""}
+                  {entry.modification.toLocaleString()}
                 </div>
               </div>
             ))}

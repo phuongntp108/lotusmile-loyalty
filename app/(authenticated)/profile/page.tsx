@@ -146,7 +146,8 @@ export default function Profile() {
                 className="text-2xl font-bold text-airline-blue"
                 data-testid="text-current-points"
               >
-                {user?.available_points?.toLocaleString() || "0"}
+                {user?.tier_details?.point_account_balances.summary.total_points.toLocaleString() ||
+                  "0"}
               </p>
             </div>
 
@@ -235,15 +236,6 @@ export default function Profile() {
 
               <div>
                 <Label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Phone Number
-                </Label>
-              </div>
-
-              <div>
-                <Label
                   htmlFor="membershipId"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
@@ -252,7 +244,7 @@ export default function Profile() {
                 <Input
                   id="membershipId"
                   type="text"
-                  value={user?.tier || ""}
+                  value={user?.external_id || ""}
                   disabled
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                   data-testid="input-membership-id"

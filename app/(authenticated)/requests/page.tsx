@@ -117,7 +117,8 @@ export default function Requests() {
                   className="text-2xl font-bold"
                   data-testid="text-current-points"
                 >
-                  {user?.available_points?.toLocaleString() || "0"}
+                  {user?.tier_details?.point_account_balances.summary.total_points?.toLocaleString() ||
+                    "0"}
                 </p>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
@@ -323,6 +324,12 @@ export default function Requests() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Base Miles
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Bonus Miles
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
@@ -361,6 +368,22 @@ export default function Requests() {
                       >
                         {request.status}
                       </span>
+                    </td>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      data-testid={`text-route-${request.id}`}
+                    >
+                      {request.status !== "approved"
+                        ? "-"
+                        : request.baseMiles ?? "-"}
+                    </td>
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      data-testid={`text-route-${request.id}`}
+                    >
+                      {request.status !== "approved"
+                        ? "-"
+                        : request.bonusMiles ?? "-"}
                     </td>
                   </tr>
                 ))}

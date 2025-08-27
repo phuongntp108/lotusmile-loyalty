@@ -1,4 +1,5 @@
 import { SSM_API_KEY, SSM_API_SECRET, SSM_ENDPOINT } from "@/constants/envs";
+import moveToDefaultTier from "@/fetchers/ssm/move-to-default-tier";
 import retrieveDetailProfile from "@/fetchers/ssm/retrieve-detail-profile";
 import { issueToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
@@ -26,7 +27,6 @@ export interface SsmUseRegisterAPIParams {
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as RegisterUser;
-    const endpoint = `${SSM_ENDPOINT}/priv/v1/apps/${SSM_API_KEY}/users`;
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
     const userId = uuidv4();
@@ -46,15 +46,21 @@ export async function POST(req: Request) {
 
     let createdUserRes;
     try {
-      createdUserRes = await ofetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${auth}`,
-        },
-        body: apiParams,
-      });
+      createdUserRes = await ofetch(
+        `${SSM_ENDPOINT}/priv/v1/apps/${SSM_API_KEY}/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${auth}`,
+          },
+          body: apiParams,
+        }
+      );
+
+      await moveToDefaultTier({ userId: createdUserRes.user.id });
     } catch (error) {
+      console.error(error);
       return NextResponse.json((error as FetchError).data, {
         status: (error as FetchError).status,
       });
@@ -70,9 +76,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const detailProfile = await retrieveDetailProfile(
-      await createdUserRes.user.id
-    );
+    const detailProfile = await retrieveDetailProfile(createdUserRes.user.id);
 
     const token = await issueToken({
       email: newUser.email,

@@ -27,6 +27,10 @@ export async function POST(req: Request) {
       data: {
         ...mappedFlight,
         requestorId: userId,
+        baseMiles:
+          mappedFlight.type === "Business"
+            ? mappedFlight.miles * 2
+            : mappedFlight.miles,
       },
       include: {
         requestor: {

@@ -78,7 +78,11 @@ export default function AdminPage() {
   const [rejectionReason, setRejectionReason] = useState("");
 
   // Fetch requests list
-  const { data: requests, isLoading } = useQuery({
+  const {
+    data: requests,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["/api/admin/request"],
     queryFn: async () => {
       return await ofetch<AdminAllRequests>("/api/admin/request");
@@ -337,7 +341,16 @@ export default function AdminPage() {
       {/* Requests Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Point Requests</CardTitle>
+          <CardTitle>
+            Point Requests{" "}
+            <Button
+              onClick={() => {
+                refetch();
+              }}
+            >
+              Reload
+            </Button>
+          </CardTitle>
           <CardDescription>
             {requests?.length || 0} total requests found
           </CardDescription>
@@ -353,6 +366,8 @@ export default function AdminPage() {
                   <TableHead>Member</TableHead>
                   <TableHead>Flight</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Base Miles</TableHead>
+                  <TableHead>Bonus Miles</TableHead>
                   <TableHead>Approved By</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -382,6 +397,16 @@ export default function AdminPage() {
                     </TableCell>
 
                     <TableCell>{getStatusBadge(request.status)}</TableCell>
+                    <TableCell>
+                      {request.status !== "approved"
+                        ? "-"
+                        : request.baseMiles ?? "-"}
+                    </TableCell>
+                    <TableCell>
+                      {request.status !== "approved"
+                        ? "-"
+                        : request.bonusMiles ?? "-"}
+                    </TableCell>
                     <TableCell>
                       {request.status === "reviewing" ? "-" : "Admin"}
                     </TableCell>
