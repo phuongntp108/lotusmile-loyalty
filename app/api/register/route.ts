@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         }
       );
 
-      await moveToDefaultTier({ userId: createdUserRes.user.id });
+      // await moveToDefaultTier({ userId: createdUserRes.user.id });
     } catch (error) {
       console.error(error);
       return NextResponse.json((error as FetchError).data, {
