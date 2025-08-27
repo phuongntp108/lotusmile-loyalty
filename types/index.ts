@@ -79,6 +79,7 @@ export interface User {
   tier_entered_at: string;
   tier_resets_at: string;
   referrer_code: string | null;
+  next_tier_points?: number;
   tier_details?: TierDetails;
 }
 

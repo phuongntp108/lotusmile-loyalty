@@ -366,8 +366,8 @@ export default function AdminPage() {
                   <TableHead>Member</TableHead>
                   <TableHead>Flight</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Base Miles</TableHead>
-                  <TableHead>Bonus Miles</TableHead>
+                  <TableHead>Base Points</TableHead>
+                  <TableHead>Bonus Points</TableHead>
                   <TableHead>Approved By</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>

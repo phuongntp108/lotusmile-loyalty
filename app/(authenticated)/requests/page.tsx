@@ -52,25 +52,16 @@ export default function Requests() {
     );
   }
 
-  const progressToNextTier = user?.available_points
-    ? Math.min(((user?.available_points % 30000) / 30000) * 100, 100)
-    : 0;
-  const pointsToNextTier = user?.available_points
-    ? 30000 - (user?.available_points % 30000)
-    : 30000;
+  const progressToNextTier =
+    Number(
+      user?.tier_details?.point_account_balances.summary.life_time_points
+    ) /
+    (Number(
+      user?.tier_details?.point_account_balances.summary.life_time_points
+    ) +
+      Number(user?.next_tier_points));
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "default"; // Green
-      case "pending":
-        return "secondary"; // Yellow
-      case "rejected":
-        return "destructive"; // Red
-      default:
-        return "outline";
-    }
-  };
+  const pointsToNextTier = user?.next_tier_points;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -136,11 +127,11 @@ export default function Requests() {
               <div className="bg-white/30 rounded-full h-2 w-32 mr-3">
                 <div
                   className="bg-airline-gold h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${progressToNextTier}%` }}
+                  style={{ width: `${progressToNextTier * 100}%` }}
                 ></div>
               </div>
               <span data-testid="text-points-to-next-tier">
-                {pointsToNextTier?.toLocaleString()} points to Platinum
+                {pointsToNextTier?.toLocaleString()} points to next tier
               </span>
             </div>
           </div>
@@ -325,10 +316,10 @@ export default function Requests() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Base Miles
+                    Base Points
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Bonus Miles
+                    Bonus Points
                   </th>
                 </tr>
               </thead>

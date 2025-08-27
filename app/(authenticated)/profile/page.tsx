@@ -80,12 +80,16 @@ export default function Profile() {
     );
   }
 
-  const progressToNextTier = user?.available_points
-    ? Math.min(((user.available_points % 30000) / 30000) * 100, 100)
-    : 0;
-  const pointsToNextTier = user?.available_points
-    ? 30000 - (user.available_points % 30000)
-    : 30000;
+  const progressToNextTier =
+    Number(
+      user?.tier_details?.point_account_balances.summary.life_time_points
+    ) /
+    (Number(
+      user?.tier_details?.point_account_balances.summary.life_time_points
+    ) +
+      Number(user?.next_tier_points));
+
+  const pointsToNextTier = user?.next_tier_points;
 
   return (
     <main
@@ -152,11 +156,13 @@ export default function Profile() {
             </div>
 
             <div className="text-left">
-              <p className="text-sm text-gray-600 mb-2">Progress to Platinum</p>
+              <p className="text-sm text-gray-600 mb-2">
+                Progress to next tier
+              </p>
               <div className="bg-gray-200 rounded-full h-2 mb-2">
                 <div
                   className="bg-airline-gold h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${progressToNextTier}%` }}
+                  style={{ width: `${progressToNextTier * 100}%` }}
                   data-testid="progress-bar"
                 ></div>
               </div>
