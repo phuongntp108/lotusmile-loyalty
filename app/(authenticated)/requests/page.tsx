@@ -2,18 +2,23 @@
 
 import RequestModal from "@/components/request-modal";
 import { Card } from "@/components/ui/card";
+import { FlightRoute } from "@/data/flight-data";
 import { getAccessToken } from "@/helpers/access-token";
 import { useAuth } from "@/hooks/useAuth";
 import { Request } from "@/lib/generated/prisma";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { get } from "http";
 import { DollarSign, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { ofetch } from "ofetch";
 import { useMemo, useState } from "react";
 
 export default function Requests() {
   const { isLoading, user } = useAuth();
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const { push } = useRouter();
 
   const { data: requests } = useQuery({
     queryKey: ["/api/request"],
@@ -70,6 +75,17 @@ export default function Requests() {
       case "pending":
         return "text-yellow-800 bg-yellow-100";
       case "rejected":
+        return "text-red-800 bg-red-100";
+      default:
+        return "text-gray-800 bg-gray-100";
+    }
+  };
+
+  const getFlightTypeColor = (type: FlightRoute["type"]) => {
+    switch (type) {
+      case "Economy":
+        return "text-yellow-800 bg-yellow-100";
+      case "Business":
         return "text-red-800 bg-red-100";
       default:
         return "text-gray-800 bg-gray-100";
@@ -160,6 +176,9 @@ export default function Requests() {
         <Card
           className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
           data-testid="card-redeem-points"
+          onClick={() => {
+            push("/redeem");
+          }}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -313,13 +332,10 @@ export default function Requests() {
                     Route
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Flight Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Base Points
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Bonus Points
                   </th>
                 </tr>
               </thead>
@@ -349,6 +365,20 @@ export default function Requests() {
                       {request.from} → {request.to}
                     </td>
                     <td
+                      className={cn(
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      )}
+                      data-testid={`text-route-${request.id}`}
+                    >
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getFlightTypeColor(
+                          request.type as FlightRoute["type"]
+                        )}`}
+                      >
+                        {request.type}
+                      </span>
+                    </td>
+                    <td
                       className="px-6 py-4 whitespace-nowrap"
                       data-testid={`status-${request.id}`}
                     >
@@ -359,22 +389,6 @@ export default function Requests() {
                       >
                         {request.status}
                       </span>
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                      data-testid={`text-route-${request.id}`}
-                    >
-                      {request.status !== "approved"
-                        ? "-"
-                        : request.baseMiles ?? "-"}
-                    </td>
-                    <td
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                      data-testid={`text-route-${request.id}`}
-                    >
-                      {request.status !== "approved"
-                        ? "-"
-                        : request.bonusMiles ?? "-"}
                     </td>
                   </tr>
                 ))}

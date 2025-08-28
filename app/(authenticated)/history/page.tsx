@@ -57,7 +57,7 @@ export default function History() {
       if (entry.modification > 0) {
         monthlyData[month].earned += entry.modification;
       } else {
-        monthlyData[month].redeemed += entry.modification;
+        monthlyData[month].redeemed += -entry.modification;
       }
     });
 
@@ -317,7 +317,7 @@ export default function History() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {entry.modification}
+                      {entry.point_source_name}
                     </p>
                     <p className="text-xs text-gray-500">
                       {format(

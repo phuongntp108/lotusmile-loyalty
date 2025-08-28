@@ -38,6 +38,11 @@ export default function AuthenticatedLayout({ children }: LayoutProps) {
       active: pathname === "/history",
     },
     {
+      href: "/redeem",
+      label: "Redeem",
+      active: pathname === "/redeem",
+    },
+    {
       href: "/profile",
       label: "Profile",
       active: pathname === "/profile",

@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { FetchError } from "ofetch";
 
 export async function POST(
   req: NextRequest,
@@ -20,7 +21,7 @@ export async function POST(
   } catch (err) {
     console.error("Approve error:", err);
     return NextResponse.json(
-      { error: (err as Error).message },
+      { error: (err as FetchError).data },
       { status: 500 }
     );
   }

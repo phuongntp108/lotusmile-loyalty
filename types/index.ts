@@ -110,44 +110,6 @@ export interface LoginUser {
   password: string;
 }
 
-export type UpsertUser = Omit<User, "id" | "createdAt" | "updatedAt">;
-
-export interface InsertPointRequest {
-  flightNumber: string;
-  departureAirport: string;
-  arrivalAirport: string;
-  departureDate: string;
-  additionalNotes?: string;
-}
-
-export interface InsertPointHistory {
-  userId: string;
-  type: string; // "earned" | "redeemed"
-  points: number;
-  description: string;
-}
-
-export interface ApproveRequest {
-  reviewerEmail: string;
-  pointsAwarded?: number;
-}
-
-export interface RejectRequest {
-  reviewerEmail: string;
-  reason: string;
-}
-
-export interface AdminListRequests {
-  page?: number; // default: 1
-  pageSize?: number; // default: 20
-  status?: string;
-  memberName?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  sort?: "submittedAt" | "status" | "memberName";
-  order?: "asc" | "desc";
-}
-
 export interface Requestor {
   id: string;
   email: string;
@@ -198,4 +160,57 @@ export interface PointHistory {
   request_id: string;
   idempotency_id: string;
   transaction_id?: string; // optional, chỉ có ở một số record
+}
+
+export interface RedeemOfferPayload {
+  rewardStoreOfferId: string;
+}
+
+export interface RewardStoreMedia {
+  id: string;
+  offer_id: string;
+  uri: string;
+  category_id: string;
+  category_name: string;
+  content_type: number;
+  culture: string;
+}
+
+export interface OfferDetails {
+  internal_name: string;
+  title: string;
+  description: string;
+  terms: string;
+  media: any[]; // Replace 'any' with a more specific type if available
+  reward_store_media: RewardStoreMedia;
+  points?: number;
+  acquisition_start_date: string;
+  acquisition_end_date?: string;
+  pos_discount_id?: string;
+  offer_status: number;
+  offer_inventory_restrictions: any[]; // Replace 'any' if you know the structure
+}
+
+export interface RewardStoreOffer {
+  id: string;
+  root_offer_id: string;
+  reward_store_id: string;
+  price: number;
+  start_date: string;
+  end_date?: string;
+  offer_details: OfferDetails;
+}
+
+export interface RedeemOfferResponsePayload {
+  reward_store_offers: RewardStoreOffer[];
+  total_rows: number;
+  skip: number;
+  take: number;
+}
+
+export interface RedeemOfferResponse {
+  data: {
+    status: string;
+    payload: RedeemOfferResponsePayload;
+  };
 }

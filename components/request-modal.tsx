@@ -72,8 +72,6 @@ export default function RequestModal({
     },
   });
 
-  const watchedValues = watch(["flightCode", "from", "to"]);
-
   const createRequestMutation = useMutation({
     mutationFn: async (data: RequestForm) => {
       return ofetch("/api/request", {

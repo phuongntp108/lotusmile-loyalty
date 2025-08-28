@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { LoginUser } from "@/types";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
+import { FetchError } from "ofetch";
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ data: detailProfile, token }, { status: 200 });
   } catch (err) {
     return NextResponse.json(
-      { error: (err as Error).message },
+      { error: (err as FetchError).data },
       { status: 500 }
     );
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { FLIGHTS_BY_CODE } from "@/data/flight-data";
+import { FetchError } from "ofetch";
 
 export async function POST(req: Request) {
   try {
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: (err as Error).message },
+      { error: (err as FetchError).data },
       { status: 500 }
     );
   }
@@ -70,7 +71,7 @@ export async function GET(req: Request) {
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: (err as Error).message },
+      { error: (err as FetchError).data },
       { status: 500 }
     );
   }

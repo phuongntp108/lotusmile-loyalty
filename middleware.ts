@@ -8,6 +8,7 @@ const JWT_SECRET = new TextEncoder().encode(
 
 export async function middleware(req: NextRequest) {
   // chỉ apply cho API cần auth
+
   const token = req.headers.get("authorization")?.split(" ")[1];
 
   if (!token) {
@@ -33,5 +34,10 @@ export async function middleware(req: NextRequest) {
 
 // áp dụng middleware cho các route cụ thể
 export const config = {
-  matcher: ["/api/profile", "/api/request", "/api/point-history"],
+  matcher: [
+    "/api/profile",
+    "/api/request",
+    "/api/point-history",
+    "/api/redeem",
+  ],
 };

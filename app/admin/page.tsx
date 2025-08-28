@@ -44,6 +44,8 @@ import {
   Eye,
   Calendar,
   Plane,
+  ThumbsUp,
+  FlashlightIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -186,6 +188,28 @@ export default function AdminPage() {
             Rejected
           </Badge>
         );
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const getFlightTypeBadge = (type: string) => {
+    switch (type) {
+      case "Economy":
+        return (
+          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+            <ThumbsUp className="w-3 h-3 mr-1" />
+            Economy
+          </Badge>
+        );
+      case "Business":
+        return (
+          <Badge variant="secondary" className="bg-green-100 text-blue-800">
+            <FlashlightIcon className="w-3 h-3 mr-1" />
+            Business
+          </Badge>
+        );
+
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -366,9 +390,7 @@ export default function AdminPage() {
                   <TableHead>Member</TableHead>
                   <TableHead>Flight</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Base Points</TableHead>
-                  <TableHead>Bonus Points</TableHead>
-                  <TableHead>Approved By</TableHead>
+                  <TableHead>Flight Type</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -396,20 +418,9 @@ export default function AdminPage() {
                       </div>
                     </TableCell>
 
+                    <TableCell>{getFlightTypeBadge(request.type)}</TableCell>
                     <TableCell>{getStatusBadge(request.status)}</TableCell>
-                    <TableCell>
-                      {request.status !== "approved"
-                        ? "-"
-                        : request.baseMiles ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      {request.status !== "approved"
-                        ? "-"
-                        : request.bonusMiles ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      {request.status === "reviewing" ? "-" : "Admin"}
-                    </TableCell>
+
                     <TableCell>
                       <div className="flex space-x-2">
                         {request.status === "reviewing" && (
